@@ -6,9 +6,8 @@ on:
   pull_request:
 
 jobs:
-  build:
+  validate:
     permissions:
-      checks: write
       contents: read
     strategy:
       matrix:
@@ -28,6 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
+        id: setup-node
         timeout-minutes: 2
         uses: actions/setup-node@v4
         with:
@@ -42,6 +42,71 @@ jobs:
         timeout-minutes: 3
         run: npm run lint --if-present
 
+      - name: Test
+        timeout-minutes: 5
+        run: npm test --if-present
+
+      - name: Upload test reports
+        timeout-minutes: 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}
+          path: "**/test-reports/**"
+
+  docs:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        timeout-minutes: 2
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        id: setup-node
+        timeout-minutes: 2
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install
+        timeout-minutes: 5
+        run: npm ci --ignore-scripts --prefer-offline --verbose --no-fund
+
+      - name: Docs
+        timeout-minutes: 3
+        run: npm run docs --if-present
+
+      - name: Upload docs
+        timeout-minutes: 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: "**/docs/**"
+
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout
+        timeout-minutes: 2
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        timeout-minutes: 2
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install
+        timeout-minutes: 5
+        run: npm ci --ignore-scripts --prefer-offline --verbose --no-fund
+
       - name: Audit (prod deps only)
         timeout-minutes: 3
         run: |
@@ -52,27 +117,5 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { default: run } = await import('${{ github.workspace }}/.github/scripts/npm-audit-annotator.js')
+            const { default: run } = await import('./.github/scripts/npm-audit-annotator.js')
             await run({ github, context })
-
-      - name: Test
-        timeout-minutes: 5
-        run: npm test --if-present
-
-      - name: Docs
-        timeout-minutes: 3
-        run: npm run docs --if-present
-
-      - name: Upload test reports
-        timeout-minutes: 2
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: "**/test-reports/**"
-
-      - name: Upload docs
-        timeout-minutes: 2
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs
-          path: "**/docs/**"
