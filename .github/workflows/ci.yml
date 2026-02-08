@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload test reports
         timeout-minutes: 2
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-reports-${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}
           path: "**/test-reports/**"
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload docs
         timeout-minutes: 2
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: docs
           path: "**/docs/**"
