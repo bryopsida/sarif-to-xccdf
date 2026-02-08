@@ -1,0 +1,78 @@
+name: ci
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    permissions:
+      checks: write
+      contents: read
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-22.04
+          - macos-latest
+          - macos-14
+          - windows-latest
+          - windows-2022
+        node-version: ['22.x', '24.x']
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        timeout-minutes: 2
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        timeout-minutes: 2
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix['node-version'] }}
+          cache: "npm"
+
+      - name: Install
+        timeout-minutes: 5
+        run: npm ci --ignore-scripts --prefer-offline --verbose --no-fund
+
+      - name: Lint
+        timeout-minutes: 3
+        run: npm run lint --if-present
+
+      - name: Audit (prod deps only)
+        timeout-minutes: 3
+        run: |
+          npm audit --omit=dev --json > audit.json || true
+
+      - name: Annotate audit findings
+        timeout-minutes: 3
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { default: run } = await import('./.github/scripts/npm-audit-annotator.js')
+            await run({ github, context })
+
+      - name: Test
+        timeout-minutes: 5
+        run: npm test --if-present
+
+      - name: Docs
+        timeout-minutes: 3
+        run: npm run docs --if-present
+
+      - name: Upload test reports
+        timeout-minutes: 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: "**/test-reports/**"
+
+      - name: Upload docs
+        timeout-minutes: 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: "**/docs/**"

@@ -1,0 +1,9 @@
+{
+  "name": "@bryopsida/sarif-to-xccdf",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CLI interface to Convert SARIF (Static Analysis Results Interchange Format) to XCCDF (Extensible Configuration Checklist Description Format)",
+  "bin": {
+    "sarif-to-xccdf": "src/cli.js"
+  }
+}

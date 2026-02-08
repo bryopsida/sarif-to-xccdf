@@ -1,0 +1,36 @@
+{
+  "name": "sarif-to-xccdf",
+  "version": "0.1.0",
+  "description": "Convert SARIF (Static Analysis Results Interchange Format) to XCCDF (Extensible Configuration Checklist Description Format)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "test": "node --test \".github/**/*.spec.js\" && npm test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspaces --if-present",
+    "lint": "standard --check .github && npm run lint --workspaces --if-present",
+    "lint:fix": "standard --fix .github && npm run lint:fix --workspaces --if-present",
+    "docs": "npm run docs --workspaces --if-present"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryopsida/sarif-to-xccdf.git"
+  },
+  "keywords": [
+    "sarif",
+    "xccdf",
+    "converter",
+    "security",
+    "static-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bryopsida/sarif-to-xccdf/issues"
+  },
+  "homepage": "https://github.com/bryopsida/sarif-to-xccdf#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
