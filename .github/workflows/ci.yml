@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Checkout
         timeout-minutes: 2
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
         id: setup-node
@@ -60,7 +60,7 @@ jobs:
     steps:
       - name: Checkout
         timeout-minutes: 2
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
         id: setup-node
@@ -94,7 +94,7 @@ jobs:
     steps:
       - name: Checkout
         timeout-minutes: 2
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
         timeout-minutes: 2
