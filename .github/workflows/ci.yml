@@ -114,7 +114,7 @@ jobs:
 
       - name: Annotate audit findings
         timeout-minutes: 3
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { default: run } = await import('${{ github.workspace }}/.github/scripts/npm-audit-annotator.js')
